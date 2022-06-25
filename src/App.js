@@ -9,7 +9,7 @@ const searchUrl = `https://api.unsplash.com/search/photos/`;
 function App() {
   let url = `${mainUrl}${clientID}`;
 
-  const [isloading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [photos, setPhotos] = useState([]);
 
   const fetchImages = async () => {
@@ -17,8 +17,8 @@ function App() {
     try {
       const response = await fetch(url);
       const data = await response.json();
-      console.log(data);
       setPhotos(data);
+      setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
       console.log(error);
@@ -29,7 +29,31 @@ function App() {
     fetchImages();
   }, []);
 
-  return <h2>stock photos starter</h2>;
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    console.log("hello");
+  };
+
+  return (
+    <main>
+      <section className="search">
+        <form className="search-form">
+          <input type="text" className="form-input" placeholder="search" />
+          <button type="submit" className="submit-btn" onClick={handleSubmit}>
+            <FaSearch></FaSearch>
+          </button>
+        </form>
+      </section>
+      <section className="photos">
+        <div className="photos-center">
+          {photos.map((image) => {
+            return <Photo key={image.id} {...image}></Photo>;
+          })}
+        </div>
+        {isLoading && <h2 className="loading">loading...</h2>}
+      </section>
+    </main>
+  );
 }
 
 export default App;
