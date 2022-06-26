@@ -10,17 +10,29 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const [photos, setPhotos] = useState([]);
   const [page, setPage] = useState(1);
+  const [query, setQuery] = useState("");
 
   const fetchImages = async () => {
     setIsLoading(true);
+
     let url;
-    const URLpage = `&page=${page}`;
-    url = `${mainUrl}${clientID}${URLpage}`;
+    const urlPage = `&page=${page}`;
+    const urlQuery = `&query=${query}`;
+    if (query) {
+      url = `${searchUrl}${clientID}${urlPage}${urlQuery}`;
+    } else {
+      url = `${mainUrl}${clientID}${urlPage}`;
+    }
+
     try {
       const response = await fetch(url);
       const data = await response.json();
       setPhotos((oldPhotos) => {
-        return [...oldPhotos, ...data];
+        if (query) {
+          return [...oldPhotos, ...data.results];
+        } else {
+          return [...oldPhotos, ...data];
+        }
       });
       setIsLoading(false);
     } catch (error) {
@@ -51,6 +63,7 @@ function App() {
 
   const handleSubmit = (event) => {
     event.preventDefault();
+    fetchImages();
     console.log("hello");
   };
 
@@ -58,7 +71,15 @@ function App() {
     <main>
       <section className="search">
         <form className="search-form">
-          <input type="text" className="form-input" placeholder="search" />
+          <input
+            type="text"
+            className="form-input"
+            placeholder="search"
+            value={query}
+            onChange={(event) => {
+              setQuery(event.target.value);
+            }}
+          />
           <button type="submit" className="submit-btn" onClick={handleSubmit}>
             <FaSearch></FaSearch>
           </button>
