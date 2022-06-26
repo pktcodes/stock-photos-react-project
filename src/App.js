@@ -46,6 +46,7 @@ function App() {
 
   useEffect(() => {
     fetchImages();
+    // eslint-disable-next-line
   }, [page]);
 
   useEffect(() => {
@@ -62,6 +63,7 @@ function App() {
     return () => {
       window.removeEventListener("scroll", event);
     };
+    // eslint-disable-next-line
   }, []);
 
   const handleSubmit = (event) => {
