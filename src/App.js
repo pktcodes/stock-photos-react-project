@@ -12,6 +12,7 @@ function App() {
   const [page, setPage] = useState(1);
   const [query, setQuery] = useState("");
   const mounted = useRef(false);
+  const [isNewImages, setIsNewImages] = useState(false);
 
   const fetchImages = async () => {
     setIsLoading(true);
@@ -38,10 +39,12 @@ function App() {
           return [...oldPhotos, ...data];
         }
       });
+      setIsNewImages(false);
       setIsLoading(false);
     } catch (error) {
-      setIsLoading(false);
       console.log(error);
+      setIsNewImages(false);
+      setIsLoading(false);
     }
   };
 
@@ -55,7 +58,28 @@ function App() {
       mounted.current = true;
       return;
     }
-    console.log("second");
+
+    if (!isNewImages) return;
+
+    if (isLoading) return;
+
+    setPage((oldPage) => {
+      return oldPage + 1;
+    });
+    // eslint-disable-next-line
+  }, [isNewImages]);
+
+  const event = () => {
+    if (window.innerHeight + window.scrollY >= document.body.scrollHeight - 2) {
+      setIsNewImages(true);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", event);
+    return () => {
+      window.removeEventListener("scroll", event);
+    };
   }, []);
 
   const handleSubmit = (event) => {
@@ -88,8 +112,9 @@ function App() {
       </section>
       <section className="photos">
         <div className="photos-center">
-          {photos.map((image) => {
-            return <Photo key={image.id} {...image}></Photo>;
+          {photos.map((image, index) => {
+            return <Photo key={index} {...image}></Photo>;
+            //Using image.id caused error, so index has been used
           })}
         </div>
         {isLoading && <h2 className="loading">loading...</h2>}
